@@ -12,3 +12,5 @@ env/
 *.log
 
 .gradio/
+
+data/chroma_db/

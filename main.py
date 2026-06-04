@@ -4,6 +4,8 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from peft import PeftModel
 import torch
 
+from rag.retriever import format_rag_system_addendum, get_retriever, index_exists, retrieve_context
+
 # =====================================
 # FastAPI App
 # =====================================
@@ -37,6 +39,22 @@ model = model.to(device)
 model.eval()
 
 print(f"Model loaded successfully on {device}")
+
+# =====================================
+# RAG Retriever
+# =====================================
+
+if index_exists():
+    _, rag_enabled = get_retriever()
+    if rag_enabled:
+        print("RAG index loaded successfully.")
+    else:
+        print("RAG index found but could not be loaded. Continuing without RAG.")
+else:
+    rag_enabled = False
+    print(
+        "RAG index not found. Run `python build_index.py` to enable grounded responses."
+    )
 
 # =====================================
 # Create Pipeline (same as Kaggle)
@@ -301,10 +319,15 @@ def chat(req: ChatRequest):
             "response": OUT_OF_SCOPE_RESPONSE
         }
 
+    system_prompt = SYSTEM_PROMPT
+    if rag_enabled:
+        context, _ = retrieve_context(req.message)
+        system_prompt = SYSTEM_PROMPT + format_rag_system_addendum(context)
+
     messages = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT
+            "content": system_prompt
         },
         {
             "role": "user",

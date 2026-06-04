@@ -4,7 +4,7 @@
 
 Serene is an AI-powered mental health support chatbot designed to provide empathetic, supportive, and safe conversations for individuals experiencing emotional challenges. Built using FastAPI, Gradio, and a fine-tuned Qwen language model, Serene offers a private and accessible space where users can discuss topics such as stress, anxiety, loneliness, self-esteem, relationships, grief, and emotional wellbeing.
 
-The system incorporates mental-health-specific fine-tuning, scope restriction, and crisis-aware response handling to ensure conversations remain supportive, focused, and responsible.
+The system incorporates mental-health-specific fine-tuning, **RAG** over bundled guide PDFs, scope restriction, and crisis-aware response handling to ensure conversations remain supportive, focused, and responsible.
 
 ---
 
@@ -15,6 +15,13 @@ The system incorporates mental-health-specific fine-tuning, scope restriction, a
 * Built on Qwen2.5-3B-Instruct
 * Fine-tuned using LoRA (PEFT)
 * Optimized for empathetic and supportive conversations
+
+### 📚 RAG (Retrieval-Augmented Generation)
+
+* Indexes ~41 mental health guide PDFs locally
+* Retrieves top relevant excerpts per user message
+* Injects grounded context into the system prompt before generation
+* Uses ChromaDB + sentence-transformers (no external API for retrieval)
 
 ### 💬 Interactive Chat Interface
 
@@ -50,6 +57,17 @@ The chatbot is designed to recognize potentially high-risk situations and encour
 
 ---
 
+## How RAG Works
+
+1. **Ingest** — `build_index.py` loads PDFs from the guides folder, splits text into chunks, and embeds them with `sentence-transformers/all-MiniLM-L6-v2`.
+2. **Store** — Embeddings are saved in a local **Chroma** database at `data/chroma_db/` (gitignored).
+3. **Retrieve** — On each in-scope `/chat` request, the top **4** chunks most similar to the user message are fetched.
+4. **Generate** — Those excerpts are appended to the system prompt; the fine-tuned Qwen model responds with empathy while prioritizing crisis and safety rules.
+
+The API still runs without an index; it logs a reminder and skips retrieval until you run `build_index.py`.
+
+---
+
 # 🏗️ Project Architecture
 
 ```text
@@ -60,6 +78,8 @@ Gradio Frontend
  │
  ▼
 FastAPI Backend
+ │
+ ├──► ChromaDB (RAG retrieval)
  │
  ▼
 Qwen2.5-3B-Instruct
@@ -75,13 +95,20 @@ Mental Health Response
 
 ```text
 serene/
-├── main.py                 # FastAPI backend server
-├── gradio_app.py           # Gradio user interface
-├── app.py                  # Local model testing script
-├── test.py                 # Additional testing utilities
-├── requirements.txt        # Project dependencies
-├── run.md                  # Detailed execution guide
-├── mental_health_model/    # Fine-tuned LoRA adapter files
+├── main.py                          # FastAPI backend, model + RAG integration
+├── gradio_app.py                    # Gradio user interface
+├── build_index.py                   # Build / rebuild the vector index
+├── rag/
+│   ├── config.py                    # Paths, chunk size, embedding model
+│   ├── ingest.py                    # PDF load, chunk, embed, persist
+│   └── retriever.py                 # Load index and retrieve context
+├── Mental Health Chatbot guides/    # Source PDFs for RAG
+├── data/chroma_db/                  # Generated index (gitignored)
+├── mental_health_model/             # Fine-tuned LoRA adapter files
+├── app.py                           # Local model testing script
+├── test.py                          # Additional testing utilities
+├── requirements.txt                 # Project dependencies
+├── run.md                           # Detailed execution guide
 └── README.md
 ```
 
@@ -95,6 +122,7 @@ serene/
 | Fine-Tuning   | LoRA (PEFT)               |
 | Backend       | FastAPI                   |
 | Frontend      | Gradio                    |
+| RAG           | ChromaDB, LangChain, sentence-transformers, pypdf |
 | Deep Learning | PyTorch                   |
 | Transformers  | Hugging Face Transformers |
 
@@ -105,7 +133,7 @@ serene/
 * Python 3.11 or newer
 * macOS, Linux, or Windows
 * Sufficient RAM to load the model locally
-* Internet connection for initial dependency installation
+* Internet connection for initial dependency and model download
 
 ---
 
@@ -114,8 +142,8 @@ serene/
 ## Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd serene
+git clone https://github.com/salajbisht/Serene---Metal-health-Chatbot.git
+cd Serene---Metal-health-Chatbot
 ```
 
 ## Create a Virtual Environment
@@ -150,6 +178,23 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Build the RAG Index
+
+Required for grounded answers. First run downloads the embedding model (~90 MB) from Hugging Face.
+
+```bash
+python build_index.py
+```
+
+Re-run whenever you add or replace PDFs in the guides folder.
+
+If the build fails with a Chroma database error:
+
+```bash
+rm -rf data/chroma_db
+python build_index.py
+```
+
 ---
 
 # ⚡ Running the Application
@@ -171,6 +216,8 @@ Chat API Endpoint:
 ```text
 http://127.0.0.1:8000/chat
 ```
+
+On startup, confirm the log shows **`RAG index loaded successfully.`** if you built the index.
 
 ---
 
@@ -203,6 +250,19 @@ uvicorn main:app --port 8001
 ```bash
 GRADIO_SERVER_PORT=7861 python gradio_app.py
 ```
+
+---
+
+# 🔍 Troubleshooting
+
+| Problem | What to do |
+|--------|------------|
+| `RAG index not found` on API start | Run `python build_index.py` |
+| Chroma error during index build | `rm -rf data/chroma_db` then run `build_index.py` again |
+| Guides folder not found | Ensure PDFs are in a folder whose name contains `mental health chatbot guides` |
+| Slow replies | Normal for a local 3B model; see `run.md` for details |
+
+For step-by-step commands, see **[run.md](run.md)**.
 
 ---
 

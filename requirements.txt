@@ -5,3 +5,8 @@ peft
 torch
 gradio
 requests
+langchain-community
+langchain-text-splitters
+pypdf
+chromadb
+sentence-transformers
