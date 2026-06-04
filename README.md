@@ -1,111 +1,259 @@
 # Serene
 
-Serene is a mental health support chatbot built with FastAPI, Gradio, and a local fine-tuned language model.
+**Because Every Feeling Deserves to Be Heard**
 
-The assistant is designed to provide compassionate emotional support for topics like stress, anxiety, loneliness, relationships, self-esteem, grief, and crisis prevention. It also includes a scope guard so unrelated requests, such as coding or general knowledge questions, are refused.
+Serene is an AI-powered mental health support chatbot designed to provide empathetic, supportive, and safe conversations for individuals experiencing emotional challenges. Built using FastAPI, Gradio, and a fine-tuned Qwen language model, Serene offers a private and accessible space where users can discuss topics such as stress, anxiety, loneliness, self-esteem, relationships, grief, and emotional wellbeing.
 
-## Features
+The system incorporates mental-health-specific fine-tuning, scope restriction, and crisis-aware response handling to ensure conversations remain supportive, focused, and responsible.
 
-- FastAPI backend for chat responses
-- Gradio chat interface
-- Local Qwen-based model with a LoRA adapter
-- Mental-health-only scope restriction
-- Crisis-aware response guidance
-- Simple setup with `requirements.txt`
+---
 
-## Project Structure
+## ✨ Key Features
+
+### 🧠 Fine-Tuned Mental Health Assistant
+
+* Built on Qwen2.5-3B-Instruct
+* Fine-tuned using LoRA (PEFT)
+* Optimized for empathetic and supportive conversations
+
+### 💬 Interactive Chat Interface
+
+* User-friendly Gradio web interface
+* Real-time conversational experience
+* Local deployment for enhanced privacy
+
+### ⚡ FastAPI Backend
+
+* REST API endpoint for chat interactions
+* Lightweight and scalable architecture
+* Easy integration with external applications
+
+### 🛡️ Scope Restriction System
+
+Serene is designed exclusively for mental health and emotional wellbeing discussions.
+
+The assistant supports topics such as:
+
+* Stress and burnout
+* Anxiety and worry
+* Loneliness and isolation
+* Self-esteem and confidence
+* Relationship challenges
+* Grief and loss
+* Emotional wellbeing
+
+Requests outside the intended scope (e.g., programming help, mathematics, general knowledge, or unrelated tasks) are politely declined.
+
+### 🚨 Crisis-Aware Guidance
+
+The chatbot is designed to recognize potentially high-risk situations and encourage users to seek immediate support from trusted individuals, emergency services, or professional crisis resources when appropriate.
+
+---
+
+# 🏗️ Project Architecture
+
+```text
+User
+ │
+ ▼
+Gradio Frontend
+ │
+ ▼
+FastAPI Backend
+ │
+ ▼
+Qwen2.5-3B-Instruct
+ + LoRA Adapter
+ │
+ ▼
+Mental Health Response
+```
+
+---
+
+# 📂 Project Structure
 
 ```text
 serene/
-├── main.py                 # FastAPI backend
-├── gradio_app.py           # Gradio chat UI
-├── app.py                  # Local model test script
-├── test.py                 # Extra test script
-├── requirements.txt        # Python dependencies
-├── run.md                  # Step-by-step run instructions
-├── mental_health_model/    # LoRA adapter and tokenizer files
+├── main.py                 # FastAPI backend server
+├── gradio_app.py           # Gradio user interface
+├── app.py                  # Local model testing script
+├── test.py                 # Additional testing utilities
+├── requirements.txt        # Project dependencies
+├── run.md                  # Detailed execution guide
+├── mental_health_model/    # Fine-tuned LoRA adapter files
 └── README.md
 ```
 
-## Requirements
+---
 
-- Python 3.11 recommended
-- macOS/Linux terminal
-- Enough memory to load the local model
+# 🛠️ Technology Stack
 
-## Setup
+| Component     | Technology                |
+| ------------- | ------------------------- |
+| Base Model    | Qwen2.5-3B-Instruct       |
+| Fine-Tuning   | LoRA (PEFT)               |
+| Backend       | FastAPI                   |
+| Frontend      | Gradio                    |
+| Deep Learning | PyTorch                   |
+| Transformers  | Hugging Face Transformers |
 
-Go to the project folder:
+---
+
+# 📋 Requirements
+
+* Python 3.11 or newer
+* macOS, Linux, or Windows
+* Sufficient RAM to load the model locally
+* Internet connection for initial dependency installation
+
+---
+
+# 🚀 Installation
+
+## Clone the Repository
 
 ```bash
-cd /Users/Salaj/Desktop/serene
+git clone <repository-url>
+cd serene
 ```
 
-Create a virtual environment:
+## Create a Virtual Environment
 
 ```bash
 python3.11 -m venv .venv
 ```
 
-If `python3.11` is not available:
+If Python 3.11 is unavailable:
 
 ```bash
 python3 -m venv .venv
 ```
 
-Install dependencies:
+## Activate the Environment
+
+### macOS / Linux
 
 ```bash
-.venv/bin/python -m pip install -r requirements.txt
+source .venv/bin/activate
 ```
 
-## Run the FastAPI Backend
+### Windows
 
 ```bash
-.venv/bin/python -m uvicorn main:app
+.venv\Scripts\activate
 ```
 
-Open:
+## Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+# ⚡ Running the Application
+
+## Start the FastAPI Backend
+
+```bash
+uvicorn main:app
+```
+
+Default URL:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-The chat endpoint is:
+Chat API Endpoint:
 
 ```text
 http://127.0.0.1:8000/chat
 ```
 
-## Run the Gradio Chat UI
+---
 
-Keep the FastAPI backend running. Then open a second terminal:
+## Launch the Gradio Interface
+
+Open a new terminal:
 
 ```bash
-cd /Users/Salaj/Desktop/serene
-.venv/bin/python gradio_app.py
+python gradio_app.py
 ```
 
-Open the Gradio URL shown in the terminal, usually:
+Default URL:
 
 ```text
 http://127.0.0.1:7860
 ```
 
-## If a Port Is Already in Use
+---
 
-Run FastAPI on another port:
+# 🔧 Custom Ports
 
-```bash
-.venv/bin/python -m uvicorn main:app --port 8001
-```
-
-Run Gradio on another port:
+### FastAPI
 
 ```bash
-GRADIO_SERVER_PORT=7861 .venv/bin/python gradio_app.py
+uvicorn main:app --port 8001
 ```
 
-## Important Note
+### Gradio
 
-Serene is not a replacement for a licensed mental health professional. For urgent safety concerns or crisis situations, users should contact emergency services, a trusted person, or a crisis helpline immediately.
+```bash
+GRADIO_SERVER_PORT=7861 python gradio_app.py
+```
+
+---
+
+# 🎯 Intended Use
+
+Serene is intended for:
+
+* Emotional support conversations
+* Mental wellness applications
+* Educational and research projects
+* Demonstrations of domain-specific LLM fine-tuning
+* AI-assisted wellbeing tools
+
+---
+
+# ⚠️ Limitations
+
+Serene is **not**:
+
+* A licensed therapist
+* A medical professional
+* A diagnostic tool
+* A crisis intervention service
+* A replacement for professional mental health care
+
+The chatbot may generate inaccurate or incomplete responses and should be used as a supportive tool rather than a source of professional advice.
+
+---
+
+# 🆘 Safety Notice
+
+If you or someone else may be in immediate danger, experiencing thoughts of self-harm, or facing a mental health emergency:
+
+* Contact local emergency services immediately.
+* Reach out to a trusted friend, family member, or guardian.
+* Contact a qualified mental health professional or crisis helpline.
+
+Professional support should always take priority during emergencies.
+
+---
+
+# 📜 License
+
+This project is intended for educational, research, and demonstration purposes. Please ensure compliance with the licensing terms of all third-party dependencies and the base model used in this project.
+
+---
+
+# 👨‍💻 Author
+
+**Salaj Bisht**
+
+Final Year B.Tech Computer Science Student
+
+*Building AI systems that are empathetic, safe, and accessible.*
