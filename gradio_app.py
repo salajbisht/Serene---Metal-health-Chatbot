@@ -144,7 +144,7 @@ with gr.Blocks(fill_height=True) as demo:
     gr.HTML("""
         <div id="serene-header">
             <h1 id="serene-title">SERENE</h1>
-            <div id="serene-tagline">everyone needs to be heard</div>
+            <div id="serene-tagline">every feelings deserved to be heard</div>
         </div>
     """)
 
