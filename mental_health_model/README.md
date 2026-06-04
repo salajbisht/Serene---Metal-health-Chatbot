@@ -1,202 +1,232 @@
 ---
+
 base_model: Qwen/Qwen2.5-3B-Instruct
 library_name: peft
----
+------------------
 
-# Model Card for Model ID
-
-<!-- Provide a quick summary of what the model is/does. -->
-
-
+# Model Card for Mental Health Chatbot Model
 
 ## Model Details
 
 ### Model Description
 
-<!-- Provide a longer summary of what this model is. -->
+This model is a parameter-efficient fine-tuned (PEFT) version of Qwen2.5-3B-Instruct, designed to act as a mental health support chatbot. The model provides empathetic, supportive, and safety-aware responses related to emotional wellbeing, stress, anxiety, loneliness, self-esteem, and interpersonal challenges.
 
+* **Developed by:** Salaj Bisht
+* **Model type:** Causal Language Model (LLM)
+* **Language(s):** English
+* **License:** Apache 2.0 (inherits base model license where applicable)
+* **Finetuned from model:** Qwen/Qwen2.5-3B-Instruct
 
+### Model Sources
 
-- **Developed by:** [More Information Needed]
-- **Funded by [optional]:** [More Information Needed]
-- **Shared by [optional]:** [More Information Needed]
-- **Model type:** [More Information Needed]
-- **Language(s) (NLP):** [More Information Needed]
-- **License:** [More Information Needed]
-- **Finetuned from model [optional]:** [More Information Needed]
-
-### Model Sources [optional]
-
-<!-- Provide the basic links for the model. -->
-
-- **Repository:** [More Information Needed]
-- **Paper [optional]:** [More Information Needed]
-- **Demo [optional]:** [More Information Needed]
+* **Base Model Repository:** https://huggingface.co/Qwen/Qwen2.5-3B-Instruct
+* **Framework:** PEFT (Parameter-Efficient Fine-Tuning)
 
 ## Uses
 
-<!-- Address questions around how the model is intended to be used, including the foreseeable users of the model and those affected by the model. -->
-
 ### Direct Use
 
-<!-- This section is for the model use without fine-tuning or plugging into a larger ecosystem/app. -->
+This model is intended for:
 
-[More Information Needed]
+* Mental health support conversations
+* Emotional wellbeing assistance
+* Stress and anxiety management discussions
+* Self-reflection and coping strategies
+* General emotional support
 
-### Downstream Use [optional]
+### Downstream Use
 
-<!-- This section is for the model use when fine-tuned for a task, or when plugged into a larger ecosystem/app -->
+The model can be integrated into:
 
-[More Information Needed]
+* Mental health chatbots
+* Wellness applications
+* Educational mental health tools
+* Supportive conversational AI systems
 
 ### Out-of-Scope Use
 
-<!-- This section addresses misuse, malicious use, and uses that the model will not work well for. -->
+This model should not be used for:
 
-[More Information Needed]
+* Clinical diagnosis
+* Medical advice
+* Emergency crisis intervention
+* Legal or financial advice
+* Replacing licensed mental health professionals
 
 ## Bias, Risks, and Limitations
 
-<!-- This section is meant to convey both technical and sociotechnical limitations. -->
-
-[More Information Needed]
+* The model may generate incorrect or misleading responses.
+* It is not a licensed therapist or medical professional.
+* Responses should not be considered professional mental health advice.
+* The model may reflect biases present in training data.
+* Users experiencing severe distress should seek professional help.
 
 ### Recommendations
 
-<!-- This section is meant to convey recommendations with respect to the bias, risk, and technical limitations. -->
+Users should:
 
-Users (both direct and downstream) should be made aware of the risks, biases and limitations of the model. More information needed for further recommendations.
+* Verify important information with qualified professionals.
+* Avoid relying solely on the model for mental health treatment.
+* Use the model as a supplementary support tool.
 
 ## How to Get Started with the Model
 
-Use the code below to get started with the model.
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+from peft import PeftModel
 
-[More Information Needed]
+base_model = "Qwen/Qwen2.5-3B-Instruct"
+adapter_path = "./mental_health_lora"
+
+tokenizer = AutoTokenizer.from_pretrained(base_model)
+
+model = AutoModelForCausalLM.from_pretrained(
+    base_model,
+    device_map="auto"
+)
+
+model = PeftModel.from_pretrained(model, adapter_path)
+
+prompt = "I have been feeling anxious lately."
+
+inputs = tokenizer(prompt, return_tensors="pt")
+
+outputs = model.generate(
+    **inputs,
+    max_new_tokens=200
+)
+
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+```
 
 ## Training Details
 
 ### Training Data
 
-<!-- This should link to a Dataset Card, perhaps with a short stub of information on what the training data is all about as well as documentation related to data pre-processing or additional filtering. -->
+The model was fine-tuned on a custom mental health conversational dataset containing supportive dialogues focused on:
 
-[More Information Needed]
+* Anxiety
+* Stress
+* Depression-related discussions
+* Emotional wellbeing
+* Self-esteem
+* Relationship concerns
 
 ### Training Procedure
 
-<!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
+#### Preprocessing
 
-#### Preprocessing [optional]
-
-[More Information Needed]
-
+* Conversation formatting applied
+* Instruction-response pairs created
+* Text cleaned and standardized
+* Duplicate samples removed where applicable
 
 #### Training Hyperparameters
 
-- **Training regime:** [More Information Needed] <!--fp32, fp16 mixed precision, bf16 mixed precision, bf16 non-mixed precision, fp16 non-mixed precision, fp8 mixed precision -->
+* **Training regime:** FP16 Mixed Precision
+* **Fine-tuning method:** LoRA
+* **Framework:** PEFT
 
-#### Speeds, Sizes, Times [optional]
+#### Speeds, Sizes, Times
 
-<!-- This section provides information about throughput, start/end time, checkpoint size if relevant, etc. -->
-
-[More Information Needed]
+* **Base Model Size:** 3 Billion Parameters
+* **Adapter Method:** LoRA
+* **Framework Version:** PEFT 0.15.2
 
 ## Evaluation
-
-<!-- This section describes the evaluation protocols and provides the results. -->
 
 ### Testing Data, Factors & Metrics
 
 #### Testing Data
 
-<!-- This should link to a Dataset Card if possible. -->
-
-[More Information Needed]
+Held-out validation conversations from the mental health support dataset.
 
 #### Factors
 
-<!-- These are the things the evaluation is disaggregating by, e.g., subpopulations or domains. -->
+Evaluation focused on:
 
-[More Information Needed]
+* Empathy
+* Helpfulness
+* Safety
+* Relevance
+* Instruction following
 
 #### Metrics
 
-<!-- These are the evaluation metrics being used, ideally with a description of why. -->
-
-[More Information Needed]
+* Validation Loss
+* Qualitative Human Evaluation
+* Response Safety Assessment
 
 ### Results
 
-[More Information Needed]
+The model demonstrates strong empathetic conversational abilities and maintains topic relevance in mental health support scenarios.
 
 #### Summary
 
-
-
-## Model Examination [optional]
-
-<!-- Relevant interpretability work for the model goes here -->
-
-[More Information Needed]
+The fine-tuned model successfully adapts Qwen2.5-3B-Instruct for supportive mental health conversations while retaining general language understanding capabilities.
 
 ## Environmental Impact
 
-<!-- Total emissions (in grams of CO2eq) and additional considerations, such as electricity usage, go here. Edit the suggested text below accordingly -->
+* **Hardware Type:** GPU
+* **Hours Used:** [Fill in]
+* **Cloud Provider:** Kaggle
+* **Compute Region:** [Fill in]
+* **Carbon Emitted:** Not measured
 
-Carbon emissions can be estimated using the [Machine Learning Impact calculator](https://mlco2.github.io/impact#compute) presented in [Lacoste et al. (2019)](https://arxiv.org/abs/1910.09700).
-
-- **Hardware Type:** [More Information Needed]
-- **Hours used:** [More Information Needed]
-- **Cloud Provider:** [More Information Needed]
-- **Compute Region:** [More Information Needed]
-- **Carbon Emitted:** [More Information Needed]
-
-## Technical Specifications [optional]
+## Technical Specifications
 
 ### Model Architecture and Objective
 
-[More Information Needed]
+* Architecture: Transformer Decoder
+* Base Model: Qwen2.5-3B-Instruct
+* Objective: Next Token Prediction
+* Fine-Tuning Method: LoRA (PEFT)
 
 ### Compute Infrastructure
 
-[More Information Needed]
-
 #### Hardware
 
-[More Information Needed]
+* NVIDIA GPU (Kaggle Environment)
 
 #### Software
 
-[More Information Needed]
+* Transformers
+* PEFT 0.15.2
+* PyTorch
+* Accelerate
 
-## Citation [optional]
+## Citation
 
-<!-- If there is a paper or blog post introducing the model, the APA and Bibtex information for that should go in this section. -->
+### BibTeX
 
-**BibTeX:**
+```bibtex
+@misc{mentalhealthqwen2026,
+  author = {Salaj Bisht},
+  title = {Mental Health Chatbot Fine-Tuned on Qwen2.5-3B-Instruct},
+  year = {2026},
+  publisher = {Hugging Face}
+}
+```
 
-[More Information Needed]
+### APA
 
-**APA:**
+Bisht, S. (2026). Mental Health Chatbot Fine-Tuned on Qwen2.5-3B-Instruct. Hugging Face.
 
-[More Information Needed]
+## More Information
 
-## Glossary [optional]
+This model was created as an educational and research project focused on developing empathetic conversational AI for mental health support applications.
 
-<!-- If relevant, include terms and calculations in this section that can help readers understand the model or model card. -->
+## Model Card Authors
 
-[More Information Needed]
-
-## More Information [optional]
-
-[More Information Needed]
-
-## Model Card Authors [optional]
-
-[More Information Needed]
+Salaj Bisht
 
 ## Model Card Contact
 
-[More Information Needed]
-### Framework versions
+For questions or feedback, contact the model author through the Hugging Face repository.
 
-- PEFT 0.15.2
+### Framework Versions
+
+* PEFT 0.15.2
+* Transformers 4.x
+* PyTorch 2.x
